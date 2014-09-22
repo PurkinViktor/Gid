@@ -13,25 +13,24 @@ module.exports = {
         return res.redirect("http://www.sayonara.com");
     },
     signIn: function(req, res) {
-        ///http://localhost:1337/user/signIn?e=viktor@mail.ru&p=VASA
+        //http://localhost:1337/user/signIn?e=viktor@mail.ru&p=VASA
         var email = req.param('e'); //req.body.email
         var password = req.param('p');
         var bcrypt = require('bcrypt-nodejs');
 
         User.findOneByEmail(email).exec(function(err, user) {
-            if (err)
+            if (err) {
                 res.json({error: 'DB error'}, 500);
-
+            }
             if (user) {
-
-
                 bcrypt.compare(password, user.password, function(err, match) {
                     if (err)
                         res.json({error: 'Server error'}, 500);
 
                     if (match) {
                         // password match
-                        req.session.user = user.id;
+                        //req.session.user = user.id;
+                        req.session.user = user;
                         res.json(user);
                     } else {
                         // invalid password
@@ -58,7 +57,7 @@ module.exports = {
                 res.json({error: 'Server error'}, 500);
 
             if (user) {
-                return res.send({err: "Пользователь с таким email уже существует!"});
+                return res.send({err: "User with this email already exists!"});
 
             } else
             {
@@ -71,8 +70,10 @@ module.exports = {
             }
 
         });
-
-
+    },
+    signOut: function(req, res) {
+        req.session.user = null;
+        res.send({msg: 'Out'}, 200);
     }
 };
 
