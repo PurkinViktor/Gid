@@ -10,7 +10,7 @@ module.exports = {
         creator_id_post: {
             type: 'integer'
         },
-        post_id:{
+        topic_id:{
             type: 'integer'
         },
         msg: {
@@ -19,6 +19,6 @@ module.exports = {
         like: {
             type: 'integer'
         }
-    }
+    }    
 };
 

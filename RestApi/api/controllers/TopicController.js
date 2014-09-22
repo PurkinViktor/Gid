@@ -23,20 +23,14 @@ module.exports = {
     },
     delet: function(req, res) {
         //http://localhost:1337/topic/delet?topic_id=
-
-        console.log(req.session.user);
         var userId = req.session.user.id;
         var topicId = req.param('topic_id');
-
         Topic.destroy({"id": topicId, 'user_id': userId}).exec(function(err, rez) {
             if (err) {
                 res.send({error: 'Server error', err: err}, 500);
             }
             res.send(rez);
         });
-
-        //"id": "542006167873438819b57b79"
-
     },
     view_list: function(req, res) {
         //http://localhost:1337/topic/view_list?start=1&size=3

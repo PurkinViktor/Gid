@@ -12,10 +12,7 @@ module.exports = {
         },
         topic_name:{
             type: 'string'
-        },
-        posts:{
-            collection: 'Post'
-        }
+        } 
     }
 };
 

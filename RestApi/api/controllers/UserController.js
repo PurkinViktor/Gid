@@ -5,13 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-module.exports = {
-    hi: function(req, res) {
-        return res.send("Hi there!");
-    },
-    bye: function(req, res) {
-        return res.redirect("http://www.sayonara.com");
-    },
+module.exports = { 
     signIn: function(req, res) {
         //http://localhost:1337/user/signIn?e=viktor@mail.ru&p=VASA
         var email = req.param('e'); //req.body.email
@@ -47,7 +41,6 @@ module.exports = {
     },
     signUp: function(req, res) {
         //http://localhost:1337/user/signUp?e=viktor@mail.ru&p=viktor&n=viktor
-        console.log("SignUp");
         var name = req.param('n');
         var email = req.param('e'); //req.body.email
         var password = req.param('p');

@@ -20,10 +20,15 @@
 module.exports.policies = {
     // Default policy for all controllers and actions
     // (`true` allows public access)
-    '*': true,     
-
+    '*': true,
     TopicController: {
         'view_list': true,
+        'create': 'isLogIn',
+        'delet': 'isLogIn'
+    },
+    PostController: {
+        'view_list': true,
+        'likes':'isLogIn',
         'create': 'isLogIn',
         'delet': 'isLogIn'
     },
