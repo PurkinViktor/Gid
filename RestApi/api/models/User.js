@@ -9,7 +9,8 @@ module.exports = {
     attributes: {
         name: {
             type: 'string',
-            required: true
+            required: true,
+            minLength: 4
         },
         email: {
             type: 'string',
@@ -20,6 +21,14 @@ module.exports = {
             type: 'string',
             required: true,
             minLength: 4
+        },
+        linkAvatar: {
+            type: 'string'
+        }
+    },
+    validationMessages: {
+        name: {
+            required: "Вы не заполнили имя."
         }
     },
     beforeCreate: function(attrs, next) {
@@ -29,5 +38,7 @@ module.exports = {
         next();
 
     }
+
+
 };
 

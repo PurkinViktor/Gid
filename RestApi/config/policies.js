@@ -28,13 +28,15 @@ module.exports.policies = {
     },
     PostController: {
         'view_list': true,
-        'likes':'isLogIn',
+        'likes': 'isLogIn',
         'create': 'isLogIn',
         'delet': 'isLogIn'
     },
     UserController: {
         //signIn: true,
-        '*': true
+        '*': true,
+        'getLinkAvatar': 'isLogIn',
+        'reName': 'isLogIn'
     }
     /***************************************************************************
      *                                                                          *

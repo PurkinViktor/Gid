@@ -5,7 +5,7 @@
  * @help        :: See http://links.sailsjs.org/docs/controllers
  */
 
-module.exports = { 
+module.exports = {
     signIn: function(req, res) {
         //http://localhost:1337/user/signIn?e=viktor@mail.ru&p=VASA
         var email = req.param('e'); //req.body.email
@@ -21,9 +21,7 @@ module.exports = {
                     if (err)
                         res.json({error: 'Server error'}, 500);
 
-                    if (match) {
-                        // password match
-                        //req.session.user = user.id;
+                    if (match) { 
                         req.session.user = user;
                         res.json(user);
                     } else {
@@ -40,11 +38,17 @@ module.exports = {
         //return res.send({email: email, password: password});
     },
     signUp: function(req, res) {
-        //http://localhost:1337/user/signUp?e=viktor@mail.ru&p=viktor&n=viktor
+        //http://localhost:1337/user/signUp?e=viktor1@mail.ru&p=viktor&n=viktor&la=img/1.png
         var name = req.param('n');
         var email = req.param('e'); //req.body.email
         var password = req.param('p');
-        var newUser = {name: name, email: email, password: password};
+        var linkAvatar = req.param('la') ;//|| "";
+
+        var newUser = {
+            name: name,
+            email: email,
+            password: password,
+            linkAvatar: linkAvatar};
         User.findOneByEmail(email).exec(function(err, user) {
             if (err)
                 res.json({error: 'Server error'}, 500);
@@ -54,7 +58,7 @@ module.exports = {
 
             } else
             {
-                User.create(newUser).exec(function createCB(err, created) {
+                User.create(newUser).exec(function(err, created) {
                     if (err) {
                         res.send({error: 'Server error', err: err}, 500);
                     }
@@ -67,6 +71,26 @@ module.exports = {
     signOut: function(req, res) {
         req.session.user = null;
         res.send({msg: 'Out'}, 200);
+    },
+    reName: function(req, res) {
+        //http://localhost:1337/user/reName?name=viktor
+
+        var name = req.param('name') ;
+        User.findOne(req.session.user.id).exec(function(err, user) {
+            console.log(err);
+            if (err) {
+                res.send({error: 'Server error', err: err}, 500);
+            }
+            user.name = name;
+            user.save();
+            res.send(user);
+
+        });
+
+    },
+    getLinkAvatar: function(req, res) {
+        res.send(req.session.user.linkAvatar);
     }
+
 };
 
