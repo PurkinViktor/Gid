@@ -6,6 +6,12 @@
  */
 
 module.exports = {
+//    types: {
+//        password: function(password) {
+//            console.log(password);
+//            return password === "123456";
+//        }
+//    },
     attributes: {
         name: {
             type: 'string',
@@ -20,10 +26,17 @@ module.exports = {
         password: {
             type: 'string',
             required: true,
+            //password: true,
             minLength: 4
         },
         linkAvatar: {
             type: 'string'
+        },
+        guid: {
+            type: 'string'
+        },
+        guidCreatedTime: {
+            type: 'datetime'
         }
     },
     validationMessages: {
@@ -31,14 +44,24 @@ module.exports = {
             required: "Вы не заполнили имя."
         }
     },
-    beforeCreate: function(attrs, next) {
+    cryptPassword: function(password) {
         var bcrypt = require('bcrypt-nodejs');
+        return bcrypt.hashSync(password);
 
-        attrs.password = bcrypt.hashSync(attrs.password);
+    },
+    beforeCreate: function(attrs, next) {
+        attrs.password = this.cryptPassword(attrs.password);
         next();
 
     }
-
+//    beforeUpdate: function(attrs, next) {
+//        var bcrypt = require('bcrypt-nodejs');
+//
+//        //console.log(this);
+//        //attrs.password = bcrypt.hashSync(attrs.password);
+//        next();
+//
+//    }
 
 };
 

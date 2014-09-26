@@ -16,7 +16,7 @@ module.exports = {
         };
         Topic.create(newTopic).exec(function create(err, created) {
             if (err) {
-                res.send({error: 'Server error', err: err}, 500);
+                res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
             }
             res.send(created);
         });
@@ -27,9 +27,9 @@ module.exports = {
         var topicId = req.param('topic_id');
         Topic.destroy({"id": topicId, 'user_id': userId}).exec(function(err, rez) {
             if (err) {
-                res.send({error: 'Server error', err: err}, 500);
+                res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
             }
-            res.send(rez);
+            res.send({error_code: ErrorCode.Code.NO_ERR, status: Status.Code.OK});
         });
     },
     view_list: function(req, res) {
@@ -39,7 +39,7 @@ module.exports = {
         //{user_id: 1, topic_name: 1}
         Topic.find().limit(size).skip(start).exec(function(err, topics) {
             if (err) {
-                res.send(400);
+                res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err},500);
             } else {
                 res.send(topics);
             }

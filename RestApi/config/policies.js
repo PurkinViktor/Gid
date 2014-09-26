@@ -35,6 +35,8 @@ module.exports.policies = {
     UserController: {
         //signIn: true,
         '*': true,
+        'viewUpload': 'isLogIn',
+        'upload': 'isLogIn',
         'getLinkAvatar': 'isLogIn',
         'reName': 'isLogIn'
     }

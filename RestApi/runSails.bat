@@ -1,0 +1,1 @@
+echo 2 | sails lift 2> outErr.txt

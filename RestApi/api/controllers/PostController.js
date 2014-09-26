@@ -19,7 +19,7 @@ module.exports = {
         };
         Post.create(newPost).exec(function create(err, created) {
             if (err) {
-                res.send({error: 'Server error', err: err}, 500);
+                res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
             }
             res.send(created);
         });
@@ -32,7 +32,7 @@ module.exports = {
         //{user_id: 1, topic_name: 1}
         Post.find({topic_id: topicId}).limit(size).skip(start).exec(function(err, posts) {
             if (err) {
-                res.send({error: 'Server error', err: err}, 500);
+                res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
             } else {
                 res.send(posts);
             }
@@ -44,16 +44,16 @@ module.exports = {
         var postId = req.param('post_id');
         Post.destroy({"id": postId, 'creator_id_post': userId}).exec(function(err, rez) {
             if (err) {
-                res.send({error: 'Server error', err: err}, 500);
+                res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
             }
-            res.send(rez);
+            res.send({error_code: ErrorCode.Code.NO_ERR, status: Status.Code.OK});
         });
     },
     likes: function(req, res) {
         //http://localhost:1337/post/likes?post_id=
         var userId = req.session.user.id;
         var postId = req.param('post_id');
-         
+
         ///, "creator_id_post": userId id: postId
         //{$set: {name: 'Roooooodles', dob: new Date(1979, 7, 18, 18, 44), loves: ['apple'], gender: 'm', vampires: 99}}
 
@@ -66,18 +66,18 @@ module.exports = {
 
         Post.findOne({id: postId, "creator_id_post": userId}).exec(function(err, post) {
             if (err) {
-                res.send({error: 'Server error', err: err}, 500);
-            } 
+                res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
+            }
             post.like = post.like + 1;
             post.save(function(err, rez) {
 
                 if (err) {
-                    res.send({error: 'Server error', err: err}, 500);
+                    res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
                 } else {
                     res.send(rez);
                 }
             });
-        }); 
+        });
     }
 };
 
