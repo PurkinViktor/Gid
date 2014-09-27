@@ -79,6 +79,9 @@ module.exports = {
     upload: function(req, res) {
 
         req.file('avatar')// Если Ошибка
+//                .on("all", function(eventName) {
+//                    console.log(eventName);
+//                })
                 .on('error', function onError(err) {
                     // console.log(err);
                     //console.log(file);
@@ -86,9 +89,10 @@ module.exports = {
                     res.send({error: ErrorCode.Code.SERVER_ERR, err: err}, 500);
                 })
                 // Если Успешно выполнено
-                .on('finish', function onSuccess() {
-                    return;
-                })
+//                .on('finish', function onSuccess(param) {
+//                    console.log(param);
+//                    //return;
+//                })
                 .upload({
                     dirname: req.session.user.email + '/',
                     saveAs: "avatar.jpg"
@@ -240,7 +244,19 @@ module.exports = {
         });
     },
     getLinkAvatar: function(req, res) {
-        res.send(req.session.user.linkAvatar);
+        var dir = req.session.user.email;
+        var file = "avatar.jpg";
+        res.download('.tmp/uploads/' + dir + '/' + file, 'avatar', function(err) {
+            if (err) {
+                console.log(err);
+                res.status(err.status).end();
+            }
+            else {
+                console.log('Sent:', file);
+            }
+        });
+        //res.send();
+        //res.send(req.session.user.linkAvatar);
     }
 
 };
