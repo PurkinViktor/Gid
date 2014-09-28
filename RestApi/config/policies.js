@@ -38,6 +38,7 @@ module.exports.policies = {
         'viewUpload': 'isLogIn',
         'upload': 'isLogIn',
         'getLinkAvatar': 'isLogIn',
+        'douwloadAvatarFile': 'isLogIn',
         'reName': 'isLogIn'
     }
     /***************************************************************************

@@ -7,7 +7,7 @@
 
 module.exports = {
     signIn: function(req, res) {
-//http://localhost:1337/user/signIn?email=viktor@mail.ru&password=987987
+//http://localhost:1337/user/signIn?email=purkin_viktor@mail.ru&password=viktor
         var email = req.param('email'); //req.body.email
         var password = req.param('password');
         var bcrypt = require('bcrypt-nodejs');
@@ -36,17 +36,17 @@ module.exports = {
         //return res.send({email: email, password: password});
     },
     signUp: function(req, res) {
-        //http://localhost:1337/user/signUp?email=viktor1@mail.ru&password=viktor&name=viktor&linkAvatar=img/1.png
+        //http://localhost:1337/user/signUp?email=purkin_viktor@mail.ru&password=viktor&name=viktor
         var name = req.param('name');
         var email = req.param('email'); //req.body.email
         var password = req.param('password');
-        var linkAvatar = req.param('linkAvatar'); //|| "";
+        //var linkAvatar = req.param('linkAvatar'); //|| "";
 
         var newUser = {
             name: name,
             email: email,
-            password: password,
-            linkAvatar: linkAvatar};
+            password: password
+        };
         User.findOneByEmail(email).exec(function(err, user) {
             if (err)
                 res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
@@ -57,13 +57,18 @@ module.exports = {
                 function HandleErr(err, user)
                 {
                     res.send({error: ErrorCode.Code.DB_ERR, err: err}, 500);
+                    res.send(user);
                 }
-                User.create(newUser, HandleErr).exec(function(err, created) {
-                    if (err) {
-                        res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
-                    }
-                    res.send(created);
-                });
+                User.create(newUser, HandleErr);
+
+                /*
+                 .exec(function(err, created) {
+                 if (err) {
+                 res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
+                 }
+                 res.send(created);
+                 })
+                 */
             }
 
         });
@@ -78,31 +83,32 @@ module.exports = {
     },
     upload: function(req, res) {
 
-        req.file('avatar')// Если Ошибка
-//                .on("all", function(eventName) {
-//                    console.log(eventName);
-//                })
+        req.file('avatar')
                 .on('error', function onError(err) {
-                    // console.log(err);
-                    //console.log(file);
-
                     res.send({error: ErrorCode.Code.SERVER_ERR, err: err}, 500);
                 })
-                // Если Успешно выполнено
-//                .on('finish', function onSuccess(param) {
-//                    console.log(param);
-//                    //return;
-//                })
                 .upload({
                     dirname: req.session.user.email + '/',
-                    saveAs: "avatar.jpg"
-//                            function(file, er) {
-//                        console.log(file.name);
-//                        console.log(er);
-//
-//                        //var name = req.session.user.login.indexOf("@");
-//                        return "avatar.jpg";
-//                    }
+                    saveAs: function(fileStream, cb) {
+                        var ext = Helper.getExtFile(fileStream.filename);
+                        var newFileName = Consts.NAME_AVATAR_FILE + '.' + ext;
+                        User.findOne(req.session.user.id).exec(function(err, user) {
+                            if (err) {
+                                res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
+                            }
+                            user.fileAvatar = newFileName;
+                            user.save(
+                                    function(err, user)
+                                    {
+                                        if (err) {
+                                            res.send({error_code: ErrorCode.Code.DB_ERR, err: err});
+                                            console.log(err);
+                                        }
+                                    }
+                            );
+                        });
+                        cb(null, newFileName);
+                    }
                 }, function(err, files) {
                     if (err)
                         return res.serverError(err);
@@ -138,7 +144,6 @@ module.exports = {
                             if (password === confirm_password) {
                                 user.password = User.cryptPassword(password);
                                 user.guidCreatedTime = new Date().setTime(0);
-                                //user.keyCreatedTime = new Date().now();
 
                                 user.save(function(err) {
                                     //console.log(err);
@@ -174,9 +179,7 @@ module.exports = {
         else {
             res.send({error_code: ErrorCode.Code.NON_KEY}, 500);
         }
-
-        // res.view('home/login', {message: 'Login failed!', layout: null});
-        // res.view('user/recoverPage', {message: 'OK View!'});
+        // res.view('home/login', {message: 'Login failed!', layout: null}); 
     },
     recoverPassword: function(req, res) {
         //http://localhost:1337/user/recoverPassword?email=viktor@mail.ru
@@ -192,14 +195,13 @@ module.exports = {
                     name: user.name,
                     link: UserService.getRecoverUrl({email: user.email, key: guid}),
                     // link: "http://localhost:1337/user/recoverPage?email=" + user.email + "&key=" + guid,
-                    email: "vikrus_n@mail.ru"
+                    email: user.email
                 };
                 user.guidCreatedTime = new Date();
                 user.guid = guid.value;
                 user.save(function(err) {
                     console.log(err);
                 });
-                //return Math.random() + file.name;
                 EmailService.sendInviteEmail(email,
                         function(error, response) {
                             if (error) {
@@ -227,9 +229,7 @@ module.exports = {
             if (err) {
                 res.send({error_code: ErrorCode.Code.SERVER_ERR, err: err}, 500);
             }
-
             user.name = name;
-//           
             user.save(
                     function(err, user)
                     {
@@ -238,25 +238,21 @@ module.exports = {
                         } else {
                             res.send(user);
                         }
-                        console.log(err);
                     }
             );
         });
     },
     getLinkAvatar: function(req, res) {
-        var dir = req.session.user.email;
-        var file = "avatar.jpg";
-        res.download('.tmp/uploads/' + dir + '/' + file, 'avatar', function(err) {
+        return  res.send({url: "user/douwloadAvatarFile"});
+    },
+    douwloadAvatarFile: function(req, res) {
+        http://localhost:1337/user/douwloadAvatarFile
+                var dir = req.session.user.email;
+        res.download('.tmp/uploads/' + dir + '/' + req.session.user.fileAvatar, Consts.NAME_AVATAR_FILE, function(err) {
             if (err) {
-                console.log(err);
                 res.status(err.status).end();
             }
-            else {
-                console.log('Sent:', file);
-            }
         });
-        //res.send();
-        //res.send(req.session.user.linkAvatar);
     }
 
 };

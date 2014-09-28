@@ -29,7 +29,7 @@ module.exports = {
             //password: true,
             minLength: 4
         },
-        linkAvatar: {
+        fileAvatar: {
             type: 'string'
         },
         guid: {
@@ -39,18 +39,14 @@ module.exports = {
             type: 'datetime'
         }
     },
-    validationMessages: {
-        name: {
-            required: "Вы не заполнили имя."
-        }
-    },
     cryptPassword: function(password) {
         var bcrypt = require('bcrypt-nodejs');
         return bcrypt.hashSync(password);
 
     },
     beforeCreate: function(attrs, next) {
-        attrs.password = this.cryptPassword(attrs.password);
+        console.log(this);
+        attrs.password = User.cryptPassword(attrs.password);
         next();
 
     }
